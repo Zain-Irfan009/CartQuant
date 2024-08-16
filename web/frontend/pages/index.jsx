@@ -111,7 +111,15 @@ export default function HomePage() {
         }
     };
 
-
+    const handlePagination = (value) => {
+        if (value == "next") {
+            setPaginationValue(paginationValue + 1);
+        } else {
+            setPaginationValue(paginationValue - 1);
+        }
+        setLoading(true);
+        setToggleLoadData(true);
+    };
 
     const handleDelete = async () => {
         setDeleteBtnLoading(true);
