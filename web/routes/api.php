@@ -17,11 +17,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return "Hello API";
 });
+Route::group(['middleware' => ['shopify.auth']], function () {
+    Route::get('products', [\App\Http\Controllers\ProductController::class, 'syncProducts']);
 
-Route::get('products',[\App\Http\Controllers\ProductController::class,'syncProducts']);
-
-Route::get('rules',[\App\Http\Controllers\RuleController::class,'index']);
-Route::delete('delete-rule/{id}',[\App\Http\Controllers\RuleController::class,'DeleteRule']);
-Route::post('save-rule',[\App\Http\Controllers\RuleController::class,'SaveRule']);
-Route::get('edit-rule',[\App\Http\Controllers\RuleController::class,'EditRule']);
-Route::post('update-rule',[\App\Http\Controllers\RuleController::class,'UpdateRule']);
+    Route::get('rules', [\App\Http\Controllers\RuleController::class, 'index']);
+    Route::delete('delete-rule/{id}', [\App\Http\Controllers\RuleController::class, 'DeleteRule']);
+    Route::post('save-rule', [\App\Http\Controllers\RuleController::class, 'SaveRule']);
+    Route::get('edit-rule', [\App\Http\Controllers\RuleController::class, 'EditRule']);
+    Route::post('update-rule', [\App\Http\Controllers\RuleController::class, 'UpdateRule']);
+});

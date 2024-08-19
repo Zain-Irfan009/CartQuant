@@ -16,7 +16,7 @@ export default function App() {
   const pages = import.meta.globEager("./pages/**/!(*.test.[jt]sx)*.([jt]sx)");
   const { t } = useTranslation();
 
-    const apiUrl = "http://cart-quant.test/api/";
+    const apiUrl = "https://phpstack-1317662-4812480.cloudwaysapps.com/api/";
   return (
     <PolarisProvider>
       <BrowserRouter>
