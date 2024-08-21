@@ -153,3 +153,27 @@
 .capitalize{
     text-transform: capitalize;
 }
+
+.stepIcon{
+    width: 50px;
+    height: 50px;
+    margin: 10px;
+    background: #cccccc;
+    border-radius: 50%;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+.stepIcon.active{
+    background:rgba(222,247,236,1);
+}
+.stepIcon .Polaris-Icon{
+    width: 40px;
+    height: 40px;
+}
+.stepIcon span{
+    font-size: 24px;
+    margin: 0;
+    padding: 0;
+}

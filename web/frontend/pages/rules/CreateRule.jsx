@@ -38,19 +38,17 @@ import {
     Select
 } from "@shopify/polaris";
 import {
-    SearchMinor,
-    SearchMajor,
-    ExternalMinor,
-    PlusMinor,
-    DeleteMinor,
-    HorizontalDotsMinor,
-    ViewMajor
+    DeleteIcon,
+    SearchIcon,
+
 } from "@shopify/polaris-icons";
 import React, { useState, useCallback, useEffect, useContext } from "react";
 import { TitleBar } from "@shopify/app-bridge-react";
 
 import { trophyImage } from "../../assets/index.js";
 import {  InputField } from '../../components/Utils/InputField.jsx'
+
+import ShowPages from "../../components/ShowPages.jsx";
 
 import axios from "axios";
 import { useAppBridge, } from "@shopify/app-bridge-react";
@@ -78,8 +76,10 @@ export default function CreateRule() {
     const [sucessToast, setSucessToast] = useState(false);
     const [toastMsg, setToastMsg] = useState('')
     const [discardModal, setDiscardModal] = useState(false)
+    const [status, setStatus] = useState(0)
 
     const [skeleton, setSkeleton] = useState(false)
+    const [selectedRadioValue, setSelectedRadioValue] = useState('product')
     const [productsList, setProductsList] = useState([]);
     const [productsListFilter, setProductsListFilter] = useState([]);
     const handleTextFieldChange = useCallback((value) => {
@@ -171,6 +171,11 @@ export default function CreateRule() {
         trackingNumberToAddMarkup = <div className="mt-2"> <InlineStack  gap="500">{tagsToAdd}</InlineStack> </div>;
     }
 
+    const handleRadioChange = (newValue) => {
+        setPendingType('')
+        setNewType('')
+        setSelectedRadioValue(newValue);
+    };
 
     const [
         toolsAndAccessoriesProductModal,
@@ -229,7 +234,9 @@ export default function CreateRule() {
     }, [toolsAndAccessoriesProductModal]);
 
 
-
+    const handleStatus = () => {
+        setStatus((prevStatus) => (prevStatus === 0 ? 1 : 0));
+    }
 
     const handleSave = async () => {
         let sessionToken = await getSessionToken(appBridge);
@@ -246,8 +253,9 @@ export default function CreateRule() {
                 name: ruleName,
                 product_data: selectedToolsAndAccessories,
                 product_ids: selectedToolsAndAccessoriesIDs,
-                type:ruleType,
-                type_values:newType
+                type:selectedRadioValue,
+                type_values:newType,
+                status:status
 
             };
 
@@ -260,9 +268,9 @@ export default function CreateRule() {
             setSucessToast(true);
             setToastMsg(response?.data?.message);
             setBtnLoading(false);
-            setTimeout(() => {
-                navigate("/");
-            }, 500);
+            // setTimeout(() => {
+            //     navigate("/");
+            // }, 500);
         } catch (error) {
 
             setToastMsg(response?.data?.message);
@@ -427,7 +435,7 @@ export default function CreateRule() {
                         type="text"
                         placeholder="Search products"
                         value={textFieldValue}
-                        prefix={<Icon source={SearchMajor} tone="base" />}
+                        prefix={<Icon source={SearchIcon} tone="base" />}
                         onChange={handleTextFieldChange}
                         autoComplete="off"
                     />
@@ -546,6 +554,32 @@ export default function CreateRule() {
                     backAction={{ content: "Home", url: "/" }}
                     breadcrumbs={[{ content: 'Discounts', onAction: handleDiscardModal }]}
                     title="Create Rule"
+                    secondaryActions={[
+                        {
+                            content:
+                                (
+                                    <div className="edit_seller_page_toggle">
+                                <span style={{ display: "flex", alignItems: "center" }}>
+                                    <input
+                                        id={`cutom-toggle-${1}`}
+                                        type="checkbox"
+                                        name="custom_field_show"
+                                        className="tgl tgl-light"
+                                        checked={status}
+                                        onChange={handleStatus}
+                                    />
+                                    <label
+                                        htmlFor={`cutom-toggle-${1}`}
+                                        className="tgl-btn"
+                                    ></label>
+                                    <span style={{ marginLeft: "5px" }}>Active/Inactive</span>
+                                </span>
+                                    </div>
+                                )
+                        }
+                    ]
+                    }
+
 
 
                 >
@@ -562,14 +596,13 @@ export default function CreateRule() {
                         </Banner> : ''
                     }
 
-                    <Form >
+                    <Form>
                         <FormLayout>
-                            <LegacyCard sectioned title='Rules'>
-                                {skeleton ? <SkeletonBodyText/> :
+                            <LegacyCard sectioned title='Rules and Types'>
+                                {skeleton ? <SkeletonBodyText /> : (
                                     <>
-                                        <div className="label_editor">
+                                        <div className="label_editor" style={{ marginBottom: '10px' }}>
                                             <InputField
-
                                                 label='Rule Name'
                                                 type='text'
                                                 marginTop
@@ -577,116 +610,98 @@ export default function CreateRule() {
                                                 name='name'
                                                 value={ruleName}
                                                 onChange={handleRuleName}
-                                                error={
-                                                    titleError
-                                                        ? "Rule Name is required"
-                                                        : ""
-                                                }
-
+                                                error={titleError ? "Rule Name is required" : ""}
                                             />
                                         </div>
 
-                                    </>
-                                }
-                            </LegacyCard>
-                            <LegacyCard sectioned title='Rules Type'>
-                                {skeleton ? <SkeletonBodyText/> :
-                                    <>
-
-
-                                        <div className="label_editor">
-                                            <Select
-                                                label="Rule Type"
-                                                options={ruleTypeOptions}
-                                                onChange={handleRuleType}
-                                                value={ruleType}
-                                            />
+                                        <div className="label_editor mt-5" style={{ marginBottom: '10px' }}>
+                                            <ShowPages selectedValue={selectedRadioValue} handleChange={handleRadioChange} />
                                         </div>
 
-                                    </>
-                                }
-                            </LegacyCard>
+                                        {selectedRadioValue === 'product' && (
+                                            <div className="mt-3" style={{ marginBottom: '10px' }}>
 
+                                                <div  className={selectedToolsAndAccessories.length ? "py-2" : "p-0"}>
+                                                    {/*<Text   as="h2" variant="headingSm">*/}
+                                                    {/*    Add Products*/}
+                                                    {/*</Text>*/}
 
-                            {ruleType == 'product' &&
-                                <LegacyCard sectioned title="Products">
-                                    {selectedToolsAndAccessories.map(
-                                        (product, index) => (
-                                            <div
-                                                key={product.id}
-                                                className="flex gap-3 !justify-between items-center flex-row border-b py-2"
-                                            >
-                                                <div>
-                                                    <Thumbnail
-                                                        source={
-                                                            product?.image?.src
+                                                    <div className="mt-2">
+                                                    <TextField
+                                                        // labelHidden
+                                                        type="text"
+                                                        placeholder="Search products"
+                                                        label="Add Products"
+                                                        value={textFieldValue}
+                                                        prefix={<Icon source={SearchIcon} tone="base" />}
+                                                        onChange={handleTextFieldChange}
+                                                        autoComplete="off"
+                                                        connectedRight={
+                                                            <Button size="large" onClick={handleOpenToolsAndAccessoriesModal}>
+                                                                Browse
+                                                            </Button>
                                                         }
-                                                        size="small"
+                                                    />
+                                                    </div>
+                                                    <div className="mb-5"></div>
+                                                </div>
+
+                                                {selectedToolsAndAccessories.map((product, index) => (
+                                                    <div
+                                                        key={product.id}
+                                                        className="flex gap-3 !justify-between items-center flex-row border-b py-2"
+                                                        style={{ marginBottom: '8px' }}
+                                                    >
+                                                        <div>
+                                                            <Thumbnail
+                                                                source={product?.image?.src}
+                                                                size="small"
+                                                            />
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <div className="flex gap-3 justify-between items-center">
+                                                                <div className="flex-1">
+                                                                    <Text
+                                                                        as="p"
+                                                                        fontWeight="regular"
+                                                                    >
+                                                                        {product.title}
+                                                                    </Text>
+                                                                </div>
+                                                                <Button
+                                                                    onClick={() => handleRemoveToolsAndAccessories(product?.id)}
+                                                                    icon={DeleteIcon}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+
+
+                                            </div>
+                                        )}
+
+                                        {(selectedRadioValue === 'type' || selectedRadioValue === 'vendor' || selectedRadioValue === 'tags') && (
+                                            <div className="mt-3">
+                                                <div onKeyDown={handleKeyPress} style={{ marginBottom: '16px' }}>
+
+                                                    <TextField
+                                                        id="pendingTag"
+                                                        label={selectedRadioValue === 'type' ? 'Type' : selectedRadioValue === 'vendor' ? 'Vendor' : 'Tags'}
+                                                        value={pendingType}
+                                                        onChange={handleChange}
+                                                        onBlur={handleBlur}
                                                     />
                                                 </div>
-                                                <div className="flex-1">
-                                                    <div className="flex gap-3 justify-between items-center">
-                                                        <div className="flex-1">
-                                                            <Text
-                                                                as="p"
-                                                                fontWeight="regular"
-                                                            >
-                                                                {product.title}
-                                                            </Text>
-                                                        </div>
-                                                        <Button
-                                                            onClick={() =>
-                                                                handleRemoveToolsAndAccessories(
-                                                                    product?.id
-                                                                )
-                                                            }
-                                                            icon={DeleteMinor}
-                                                        />
-                                                    </div>
-                                                </div>
+                                                <div className="tags_spacing">{trackingNumberToAddMarkup}</div>
                                             </div>
-                                        )
-                                    )}
-
-                                    <div
-                                        className={
-                                            selectedToolsAndAccessories.length
-                                                ? "py-2"
-                                                : "p-0"
-                                        }
-                                    >
-                                        <Button
-                                            variant="plain"
-                                            onClick={
-                                                handleOpenToolsAndAccessoriesModal
-                                            }
-                                            icon={PlusMinor}
-                                        >
-                                            Add Products
-                                        </Button>
-                                    </div>
-                                </LegacyCard>
-                            }
-
-                            {(ruleType == 'type' || ruleType == 'vendor' || ruleType == 'tags') &&
-                                <LegacyCard sectioned title={ruleType == 'type'?'Type': ruleType == 'vendor'?'Vendor' : 'Tags'} >
-
-                                    <div onKeyDown={handleKeyPress}>
-                                        <TextField
-                                            id="pendingTag"
-                                            label={ruleType == 'type'?'Type': ruleType == 'vendor'?'Vendor' : 'Tags'}
-                                            value={pendingType}
-                                            onChange={handleChange}
-                                            onBlur={handleBlur}
-
-                                        />
-                                    </div>
-                                    <div className="tags_spacing">{trackingNumberToAddMarkup}</div>
-                                </LegacyCard>
-                            }
-
+                                        )}
+                                    </>
+                                )}
+                            </LegacyCard>
                         </FormLayout>
                     </Form>
+
 
 
                     <div className='Polaris-Product-Actions'>

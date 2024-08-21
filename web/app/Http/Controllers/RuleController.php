@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-
+use App\Models\Charge;
+use App\Models\Plan;
 use App\Models\Rule;
 use Illuminate\Http\Request;
 use Shopify\Clients\Rest;
@@ -18,6 +18,54 @@ class RuleController extends Controller
         try {
             if ($shop) {
                 $rules = Rule::query();
+                $charge=Charge::where('status','active')->where('shop_id',$shop->id)->latest()->first();
+                $subscribed=true;
+                $billing_url=null;
+                if($charge==null){
+                    $subscribed=false;
+                    $plan_controller = new PlanController();
+                    $billing_url = $plan_controller->billing_redirect_url($shop);
+                }
+
+                if($shop->email==null){
+                    $shop_api = new Rest($shop->shop, $shop->access_token);
+                    $result = $shop_api->get('shop');
+                    $result = $result->getDecodedBody();
+                    $result=$result['shop'];
+                    $email=$result['email'];
+                    $shop->email=$email;
+                    $shop->save();
+
+
+                }
+
+            $url='https://' . $shop->shop;
+                $app_status=false;
+                $link = 'https://' . $shop->shop . '/admin/themes/current/editor?context=apps';
+
+                $ch = curl_init();
+                $timeout = 5;
+                curl_setopt($ch, CURLOPT_URL, $url);
+                curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)");
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,false);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER,false);
+                curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+                $data_file = curl_exec($ch);
+                curl_close($ch);
+
+                if (str_contains($data_file, 'Cart_Quant')) {
+                    $app_status=true;
+                }
+                elseif (str_contains($data_file, '/password')){
+                    $app_status=false;
+//                    $link = 'https://' . $shop->shop . '/admin/themes/current/editor?context=apps';
+                           $link='https://'.$shop->shop.'/admin/online_store/preferences';
+                }
+
+
                 if ($request->status == 0 || $request->status == 1) {
                     $rules = $rules->where('status', $request->status);
                 }
@@ -26,11 +74,25 @@ class RuleController extends Controller
                 }
 
                 $rules = $rules->where('shop_id', $shop->id)->orderBy('id', 'Desc')->paginate(20);
-                return response()->json($rules);
+
+                $data = [
+                    'success' => true,
+                    'data' => $rules,
+                    'subscribed'=>$subscribed,
+                    'billing_url'=>$billing_url,
+                    'app_status'=>$app_status,
+                    'link'=>$link,
+
+                ];
+
             }
         } catch (\Exception $exception) {
-
+            $data = [
+                'error' => $exception->getMessage(),
+                'success' => false
+            ];
         }
+        return response()->json($data);
     }
 
     public function SaveRule(Request $request)
@@ -43,6 +105,7 @@ class RuleController extends Controller
                 $rule = new Rule();
                 $rule->name = $request->name;
                 $rule->type = $request->type;
+                $rule->status = $request->status;
                 if ($request->type == 'product') {
                     $rule->product_data = json_encode( $request->product_data);
                     $rule->type_values = implode(',', $request->product_ids);

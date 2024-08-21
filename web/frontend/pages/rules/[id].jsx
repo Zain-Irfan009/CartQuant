@@ -38,13 +38,9 @@ import {
     Select
 } from "@shopify/polaris";
 import {
-    SearchMinor,
-    SearchMajor,
-    ExternalMinor,
-    PlusMinor,
-    DeleteMinor,
-    HorizontalDotsMinor,
-    ViewMajor
+    SearchIcon,
+    DeleteIcon,
+
 } from "@shopify/polaris-icons";
 import React, { useState, useCallback, useEffect, useContext } from "react";
 import { TitleBar } from "@shopify/app-bridge-react";
@@ -63,6 +59,7 @@ import "../../index.css";
 
 
 import {useLocation, useNavigate} from "react-router-dom";
+import ShowPages from "../../components/ShowPages.jsx";
 
 
 export default function EditRule() {
@@ -83,6 +80,7 @@ export default function EditRule() {
     const [toastMsg, setToastMsg] = useState('')
     const [discardModal, setDiscardModal] = useState(false)
     const [status, setStatus] = useState(0)
+    const [selectedRadioValue, setSelectedRadioValue] = useState('product')
 
     const [skeleton, setSkeleton] = useState(false)
     const [productsList, setProductsList] = useState([]);
@@ -201,6 +199,12 @@ export default function EditRule() {
         useState([]);
 
 
+    const handleRadioChange = (newValue) => {
+        setPendingType('')
+        setNewType('')
+        setSelectedRadioValue(newValue);
+    };
+
     const handleRemoveToolsAndAccessories = (productId) => {
         const newArray = selectedToolsAndAccessories.filter(
             (product) => product.id !== productId
@@ -256,7 +260,7 @@ export default function EditRule() {
                 name: ruleName,
                 product_data: selectedToolsAndAccessories,
                 product_ids: selectedToolsAndAccessoriesIDs,
-                type:ruleType,
+                type:selectedRadioValue,
                 type_values:newType,
                 status:status
 
@@ -271,9 +275,9 @@ export default function EditRule() {
             setSucessToast(true);
             setToastMsg(response?.data?.message);
             setBtnLoading(false);
-            setTimeout(() => {
-                navigate("/");
-            }, 500);
+            // setTimeout(() => {
+            //     navigate("/");
+            // }, 500);
         } catch (error) {
             setBtnLoading(false);
         }
@@ -333,7 +337,7 @@ export default function EditRule() {
             if (response?.status == 200) {
 
                 setRuleName(response?.data?.data?.rule?.name);
-                setRuleType(response?.data?.data?.rule?.type)
+                setSelectedRadioValue(response?.data?.data?.rule?.type)
                 setStatus(response?.data?.data?.rule?.status)
                 if (response?.data?.data?.rule?.type=='tags' || response?.data?.data?.rule?.type=='vendor' || response?.data?.data?.rule?.type=='type'  ) {
                     setNewType(response?.data?.data?.rule?.type_values?.split(","));
@@ -487,7 +491,7 @@ export default function EditRule() {
                             type="text"
                             placeholder="Search products"
                             value={textFieldValue}
-                            prefix={<Icon source={SearchMajor} tone="base" />}
+                            prefix={<Icon source={SearchIcon} tone="base" />}
                             onChange={handleTextFieldChange}
                             autoComplete="off"
                         />
@@ -647,131 +651,126 @@ export default function EditRule() {
                             </Banner> : ''
                         }
 
-                        <Form >
+                        <Form>
                             <FormLayout>
-                                <LegacyCard sectioned title='Rules'>
-                                    {skeleton ? <SkeletonBodyText/> :
+                                <LegacyCard sectioned title="Rules">
+                                    {skeleton ? (
+                                        <SkeletonBodyText />
+                                    ) : (
                                         <>
                                             <div className="label_editor">
                                                 <InputField
-
-                                                    label='Rule Name'
-                                                    type='text'
+                                                    label="Rule Name"
+                                                    type="text"
                                                     marginTop
                                                     required
-                                                    name='name'
+                                                    name="name"
                                                     value={ruleName}
                                                     onChange={handleRuleName}
-                                                    error={
-                                                        titleError
-                                                            ? "Rule Name is required"
-                                                            : ""
-                                                    }
-
+                                                    error={titleError ? "Rule Name is required" : ""}
                                                 />
                                             </div>
 
-                                        </>
-                                    }
-                                </LegacyCard>
-                                <LegacyCard sectioned title='Rules Type'>
-                                    {skeleton ? <SkeletonBodyText/> :
-                                        <>
-
-
-                                            <div className="label_editor">
-                                                <Select
-                                                    label="Rule Type"
-                                                    options={ruleTypeOptions}
-                                                    onChange={handleRuleType}
-                                                    value={ruleType}
-                                                />
+                                            <div className="label_editor mt-5" style={{ marginBottom: '10px' }}>
+                                                <ShowPages selectedValue={selectedRadioValue} handleChange={handleRadioChange} />
                                             </div>
 
-                                        </>
-                                    }
-                                </LegacyCard>
+                                            {selectedRadioValue === "product" && (
 
+                                                <div className="label_editor">
+                                                    <div  className={selectedToolsAndAccessories.length ? "py-2" : "p-0"}>
+                                                        {/*<Text   as="h2" variant="headingSm">*/}
+                                                        {/*    Add Products*/}
+                                                        {/*</Text>*/}
 
-                                {ruleType == 'product' &&
-                                    <LegacyCard sectioned title="Products">
-                                        {selectedToolsAndAccessories.map(
-                                            (product, index) => (
-                                                <div
-                                                    key={product.id}
-                                                    className="flex gap-3 !justify-between items-center flex-row border-b py-2"
-                                                >
-                                                    <div>
-                                                        <Thumbnail
-                                                            source={
-                                                                product?.image?.src
-                                                            }
-                                                            size="small"
-                                                        />
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <div className="flex gap-3 justify-between items-center">
-                                                            <div className="flex-1">
-                                                                <Text
-                                                                    as="p"
-                                                                    fontWeight="regular"
-                                                                >
-                                                                    {product.title}
-                                                                </Text>
-                                                            </div>
-                                                            <Button
-                                                                onClick={() =>
-                                                                    handleRemoveToolsAndAccessories(
-                                                                        product?.id
-                                                                    )
+                                                        <div className="mt-2">
+                                                            <TextField
+                                                                // labelHidden
+                                                                type="text"
+                                                                placeholder="Search products"
+                                                                label="Add Products"
+                                                                value={textFieldValue}
+                                                                prefix={<Icon source={SearchIcon} tone="base" />}
+                                                                onChange={handleTextFieldChange}
+                                                                autoComplete="off"
+                                                                connectedRight={
+                                                                    <Button size="large" onClick={handleOpenToolsAndAccessoriesModal}>
+                                                                        Browse
+                                                                    </Button>
                                                                 }
-                                                                icon={DeleteMinor}
                                                             />
                                                         </div>
+                                                        <div className="mb-5"></div>
+                                                    </div>
+                                                    <div>
+                                                        {selectedToolsAndAccessories.map(
+                                                            (product, index) => (
+                                                                <div
+                                                                    key={product.id}
+                                                                    className="flex gap-3 !justify-between items-center flex-row border-b py-2"
+                                                                >
+                                                                    <div>
+                                                                        <Thumbnail
+                                                                            source={
+                                                                                product?.image?.src
+                                                                            }
+                                                                            size="small"
+                                                                        />
+                                                                    </div>
+                                                                    <div className="flex-1">
+                                                                        <div className="flex gap-3 justify-between items-center">
+                                                                            <div className="flex-1">
+                                                                                <Text as="p" fontWeight="regular">
+                                                                                    {product.title}
+                                                                                </Text>
+                                                                            </div>
+                                                                            <Button
+                                                                                onClick={() =>
+                                                                                    handleRemoveToolsAndAccessories(
+                                                                                        product?.id
+                                                                                    )
+                                                                                }
+                                                                                icon={DeleteIcon}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        )}
+
                                                     </div>
                                                 </div>
-                                            )
-                                        )}
+                                            )}
 
-                                        <div
-                                            className={
-                                                selectedToolsAndAccessories.length
-                                                    ? "py-2"
-                                                    : "p-0"
-                                            }
-                                        >
-                                            <Button
-                                                variant="plain"
-                                                onClick={
-                                                    handleOpenToolsAndAccessoriesModal
-                                                }
-                                                icon={PlusMinor}
-                                            >
-                                                Add Products
-                                            </Button>
-                                        </div>
-                                    </LegacyCard>
-                                }
-
-                                {(ruleType == 'type' || ruleType == 'vendor' || ruleType == 'tags') &&
-                                    <LegacyCard sectioned title={ruleType == 'type'?'Type': ruleType == 'vendor'?'Vendor' : 'Tags'} >
-
-                                        <div onKeyDown={handleKeyPress}>
-                                            <TextField
-                                                id="pendingTag"
-                                                label={ruleType == 'type'?'Type': ruleType == 'vendor'?'Vendor' : 'Tags'}
-                                                value={pendingType}
-                                                onChange={handleChange}
-                                                onBlur={handleBlur}
-
-                                            />
-                                        </div>
-                                        <div className="tags_spacing">{trackingNumberToAddMarkup}</div>
-                                    </LegacyCard>
-                                }
-
+                                            {(selectedRadioValue === "type" ||
+                                                selectedRadioValue === "vendor" ||
+                                                selectedRadioValue === "tags") && (
+                                                <div className="label_editor">
+                                                    <TextField
+                                                        id="pendingTag"
+                                                        label={
+                                                            selectedRadioValue === "type"
+                                                                ? "Type"
+                                                                : selectedRadioValue === "vendor"
+                                                                    ? "Vendor"
+                                                                    : "Tags"
+                                                        }
+                                                        value={pendingType}
+                                                        onChange={handleChange}
+                                                        onBlur={handleBlur}
+                                                        onKeyDown={handleKeyPress}
+                                                    />
+                                                    <div className="tags_spacing">
+                                                        {trackingNumberToAddMarkup}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
+                                </LegacyCard>
                             </FormLayout>
                         </Form>
+
 
 
                         <div className='Polaris-Product-Actions'>

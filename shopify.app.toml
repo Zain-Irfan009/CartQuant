@@ -3,22 +3,23 @@
 client_id = "8e3a276842b6b4c876eb3d96121088b3"
 name = "CartQuant (Local)"
 handle = "cartquant-local"
-application_url = "https://compute-salon-gamespot-essential.trycloudflare.com"
+application_url = "https://images-jurisdiction-stuffed-nerve.trycloudflare.com"
 embedded = true
 
 [build]
 automatically_update_urls_on_dev = true
 dev_store_url = "tlx-new-brand.myshopify.com"
+include_config_on_deploy = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_customers,read_orders,read_products,write_customers,write_orders,write_products"
+scopes = "read_products,write_products"
 
 [auth]
 redirect_urls = [
-  "https://compute-salon-gamespot-essential.trycloudflare.com/auth/callback",
-  "https://compute-salon-gamespot-essential.trycloudflare.com/auth/shopify/callback",
-  "https://compute-salon-gamespot-essential.trycloudflare.com/api/auth/callback"
+  "https://images-jurisdiction-stuffed-nerve.trycloudflare.com/auth/callback",
+  "https://images-jurisdiction-stuffed-nerve.trycloudflare.com/auth/shopify/callback",
+  "https://images-jurisdiction-stuffed-nerve.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

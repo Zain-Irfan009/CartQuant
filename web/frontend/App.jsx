@@ -16,7 +16,8 @@ export default function App() {
   const pages = import.meta.globEager("./pages/**/!(*.test.[jt]sx)*.([jt]sx)");
   const { t } = useTranslation();
 
-    const apiUrl = "https://phpstack-1317662-4812480.cloudwaysapps.com/api/";
+    // const apiUrl = "https://phpstack-1317662-4812480.cloudwaysapps.com/api/";
+    const apiUrl = "http://cart-quant.test/api/";
   return (
     <PolarisProvider>
       <BrowserRouter>
@@ -28,6 +29,14 @@ export default function App() {
                 //   label: t("NavigationMenu.pageName"),
                 //   destination: "/pagename",
                 // },
+                  {
+                  label:'Installations',
+                  destination: "/GettingStarted",
+                },
+                  {
+                      label:'Support',
+                      destination: "/Support",
+                  },
               ]}
             />
 

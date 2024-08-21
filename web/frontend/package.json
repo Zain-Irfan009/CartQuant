@@ -24,7 +24,7 @@
     "@shopify/app-bridge-utils": "^3.1.0",
     "@shopify/i18next-shopify": "^0.2.9",
     "@shopify/polaris": "^13.9.0",
-    "@shopify/polaris-icons": "^7.13.0",
+    "@shopify/polaris-icons": "^9.3.0",
     "@vitejs/plugin-react": "4.2.1",
     "axios": "^1.6.7",
     "i18next": "^23.1.0",

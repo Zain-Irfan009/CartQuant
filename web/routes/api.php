@@ -25,4 +25,12 @@ Route::group(['middleware' => ['shopify.auth']], function () {
     Route::post('save-rule', [\App\Http\Controllers\RuleController::class, 'SaveRule']);
     Route::get('edit-rule', [\App\Http\Controllers\RuleController::class, 'EditRule']);
     Route::post('update-rule', [\App\Http\Controllers\RuleController::class, 'UpdateRule']);
+
+    Route::get('installation', [\App\Http\Controllers\SettingController::class, 'index']);
+
+    Route::get('email', [\App\Http\Controllers\SettingController::class, 'Email']);
+    Route::post('send-message', [\App\Http\Controllers\SettingController::class, 'SendMessage']);
+
 });
+Route::get('check-charge', [\App\Http\Controllers\PlanController::class, 'CheckCharge']);
+Route::any('return-url', [\App\Http\Controllers\PlanController::class, 'ReturnUrl']);
