@@ -34,3 +34,17 @@ Route::group(['middleware' => ['shopify.auth']], function () {
 });
 Route::get('check-charge', [\App\Http\Controllers\PlanController::class, 'CheckCharge']);
 Route::any('return-url', [\App\Http\Controllers\PlanController::class, 'ReturnUrl']);
+
+Route::post('/webhooks/app-uninstall', function (Request $request) {
+    try {
+        $product=json_decode($request->getContent());
+        $shop=$request->header('x-shopify-shop-domain');
+        $shop=\App\Models\Session::where('shop',$shop)->first();
+        \App\Models\Charge::where('shop_id',$shop->id)->delete();
+        \App\Models\Rule::where('shop_id',$shop->id)->delete();
+
+        $shop->forceDelete();
+
+    } catch (\Exception $e) {
+    }
+});

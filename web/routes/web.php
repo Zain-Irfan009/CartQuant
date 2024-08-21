@@ -64,7 +64,7 @@ Route::get('/api/auth/callback', function (Request $request) {
     $host = $request->query('host');
     $shop = Utils::sanitizeShopDomain($request->query('shop'));
 
-    $response = Registry::register('/api/webhooks', Topics::APP_UNINSTALLED, $shop, $session->getAccessToken());
+    $response = Registry::register('/api/webhooks/app-uninstall', Topics::APP_UNINSTALLED, $shop, $session->getAccessToken());
     if ($response->isSuccess()) {
         Log::debug("Registered APP_UNINSTALLED webhook for shop $shop");
     } else {

@@ -194,7 +194,7 @@ class PlanController extends Controller
 
         }
 
-        return redirect("https://admin.shopify.com/store/".explode('.myshopify.com',$shop->shop)[0]."/apps/cartquant-local/GettingStarted");
+        return redirect("https://admin.shopify.com/store/".explode('.myshopify.com',$shop->shop)[0]."/apps/cartquant/GettingStarted");
     }
 
     public function check_app_active_plan($shop)
