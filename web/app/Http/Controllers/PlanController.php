@@ -86,7 +86,7 @@ class PlanController extends Controller
             $shop = Session::where('shop', $request['shop'])->latest()->first();
             $active_plan_charge = Charge::where('shop_id', $shop->id)->where('status', 'active')->first();
             if (isset($active_plan_charge)) {
-                $this->helper->getShopApi($shop->shop)->rest('delete', '/admin/api/2024-01/recurring_application_charges/' . $active_plan_charge->charge_id . '.json');
+                getShopApi($shop->shop)->rest('delete', '/admin/api/2024-01/recurring_application_charges/' . $active_plan_charge->charge_id . '.json');
             }
             $this->check_app_active_plan($shop->name);
 
@@ -171,7 +171,7 @@ class PlanController extends Controller
         $shop = Session::where('shop', $request['shop'])->first();
         $host = $request->host;
 
-        $response = $this->helper->getShopApi($shop->shop)->rest('GET', '/admin/api/2024-01/recurring_application_charges/' . $request['charge_id'] . '.json');
+        $response = getShopApi($shop->shop)->rest('GET', '/admin/api/2024-01/recurring_application_charges/' . $request['charge_id'] . '.json');
 
         if ($response['errors'] == false) {
             $response = $response['body']['recurring_application_charge'];

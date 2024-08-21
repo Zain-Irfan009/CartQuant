@@ -100,7 +100,7 @@ class SettingController extends Controller
         try {
             if ($shop) {
 
-                $sender_email=env('MAIL_FROM_ADDRESS');
+                $sender_email=$request->email;
                 $sender_name=env('MAIL_FROM_NAME');
                 $email_to="zain.irfan4442@gmail.com";
                 $message=$request->message;
