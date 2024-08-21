@@ -10,7 +10,7 @@
 
 
 <h3 style="text-align: center;">Support Message</h3>
-
+<b>Email from:</b> {{$email}}<br>
 <b>Message:  </b>
 <p> {!! $mail_content !!}</p>
 <br>

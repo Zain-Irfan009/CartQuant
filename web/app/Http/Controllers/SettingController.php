@@ -97,10 +97,11 @@ class SettingController extends Controller
 
     public function SendMessage(Request $request){
         $shop = getShop($request->get('shopifySession'));
+
         try {
             if ($shop) {
 
-                $sender_email=$request->email;
+                $sender_email=env('MAIL_FROM_ADDRESS');
                 $sender_name=env('MAIL_FROM_NAME');
                 $email_to="zain.irfan4442@gmail.com";
                 $message=$request->message;
