@@ -34,7 +34,7 @@ class SettingController extends Controller
                 }
 
                 $url='https://' . $shop->shop;
-                $link = 'https://' . $shop->shop . '/admin/themes/current/editor?context=apps';
+                $customizer_link = 'https://' . $shop->shop . '/admin/themes/current/editor?context=apps';
                 $app_status=false;
                 $ch = curl_init();
                 $timeout = 5;
@@ -48,20 +48,24 @@ class SettingController extends Controller
                 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
                 $data_file = curl_exec($ch);
                 curl_close($ch);
-
+                $password_protected=false;
                 if (str_contains($data_file, 'Cart_Quant')) {
                     $app_status=true;
                 }
                 elseif (str_contains($data_file, '/password')){
                     $app_status=false;
-                    $link='https://'.$shop->shop.'/admin/online_store/preferences';
+                    $password_protected=true;
+//                    $link = 'https://' . $shop->shop . '/admin/themes/current/editor?context=apps';
+                    $password_link='https://'.$shop->shop.'/admin/online_store/preferences';
                 }
                 $data = [
                     'success' => true,
                     'rule_found' => $rule_found,
                     'all_rules_active' => $all_rules_active,
                     'app_status'=>$app_status,
-                    'link'=>$link,
+                    'password_protected'=>$password_protected,
+                    'password_link'=>$password_link,
+                    'customizer_link'=>$customizer_link,
 
                 ];
             }
@@ -124,4 +128,7 @@ class SettingController extends Controller
         }
         return response()->json($data);
     }
+
+
+
 }

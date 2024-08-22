@@ -35,6 +35,7 @@ import SkeletonTable from "../components/SkeletonTable.jsx";
 import {
     EditIcon,
     DeleteIcon,
+    ExternalSmallIcon
 
 } from "@shopify/polaris-icons";
 import { useTranslation, Trans } from "react-i18next";
@@ -71,6 +72,7 @@ export default function HomePage() {
     const [toggleLoadData, setToggleLoadData] = useState(true);
 
     const [appStatus, setAppStatus] = useState(false);
+    const [passwordProtected, setPasswordProtected] = useState(false);
     const [linkUrl, setLinkUrl] = useState(null);
     const [rules, setRules] = useState([]);
     const { mode, setMode } = useSetIndexFiltersMode();
@@ -127,6 +129,7 @@ export default function HomePage() {
                     }
                 setRules(response?.data?.data?.data);
                  setAppStatus(response?.data?.app_status)
+                setPasswordProtected(response?.data?.password_protected)
                 setLinkUrl(response?.data?.link)
 
                 setLoading(false);
@@ -141,6 +144,10 @@ export default function HomePage() {
             setTableLoading(false);
         }
     };
+
+
+
+
 
     const handlePagination = (value) => {
         if (value == "next") {
@@ -193,6 +200,10 @@ export default function HomePage() {
             fetchData();
         }
     }, [toggleLoadData, selected, queryValue]);
+
+
+
+
     const emptyStateMarkup = (
         // <EmptySearchResult title={"No Rule Found"} withIllustration />
 
@@ -414,7 +425,7 @@ export default function HomePage() {
 
                 <>
                     <Page>
-                        {!appStatus &&
+                        {!appStatus && !passwordProtected &&
                     <Banner
                         title="Your app theme block extension is not enabled Yet."
                         tone="warning"
@@ -427,7 +438,12 @@ export default function HomePage() {
                         <div className="mt-3">
                         <InlineStack  gap="400" wrap={false} blockAlign="center">
 
-                                <Button onClick={handleButtonClick} disabled={!linkUrl} primary>Enable Theme Block Extension</Button>
+                            <Button onClick={handleButtonClick} disabled={!linkUrl} primary>
+      <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+        Enable Theme Block Extension
+        <Icon source={ExternalSmallIcon} tone="base" />
+      </span>
+                            </Button>
 
                             <Link url="/support">
                                 <Button primary>Contact Us</Button>
@@ -438,6 +454,37 @@ export default function HomePage() {
                         </InlineStack>
                         </div>
                     </Banner>
+                        }
+
+                        {!appStatus && passwordProtected &&
+                            <Banner
+                                title="Your Store is Password Protected "
+                                tone="info"
+                            >
+                                <List >
+                                    <List.Item>
+                                       Please disable the password by clicking the button below
+                                    </List.Item>
+                                </List>
+                                <div className="mt-3">
+                                    <InlineStack  gap="400" wrap={false} blockAlign="center">
+
+                                        <Button onClick={handleButtonClick} disabled={!linkUrl} primary>
+      <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+       Disable Password
+        <Icon source={ExternalSmallIcon} tone="base" />
+      </span>
+                                        </Button>
+
+                                        <Link url="/support">
+                                            <Button primary>Contact Us</Button>
+                                        </Link>
+                                        <Link url="/GettingStarted">
+                                            <Button primary>Setup Guide</Button>
+                                        </Link>
+                                    </InlineStack>
+                                </div>
+                            </Banner>
                         }
 
                     </Page>

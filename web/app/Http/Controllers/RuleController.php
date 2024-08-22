@@ -55,11 +55,13 @@ class RuleController extends Controller
                 $data_file = curl_exec($ch);
                 curl_close($ch);
 
+                $password_protected=false;
                 if (str_contains($data_file, 'Cart_Quant')) {
                     $app_status=true;
                 }
                 elseif (str_contains($data_file, '/password')){
                     $app_status=false;
+                    $password_protected=true;
 //                    $link = 'https://' . $shop->shop . '/admin/themes/current/editor?context=apps';
                            $link='https://'.$shop->shop.'/admin/online_store/preferences';
                 }
@@ -80,6 +82,7 @@ class RuleController extends Controller
                     'subscribed'=>$subscribed,
                     'billing_url'=>$billing_url,
                     'app_status'=>$app_status,
+                    'password_protected'=>$password_protected,
                     'link'=>$link,
 
                 ];

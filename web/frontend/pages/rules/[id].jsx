@@ -117,10 +117,12 @@ export default function EditRule() {
 
 
     const addNewTrackingNumber = (trackingNumber) => {
-        const trackingNumberSet = new Set(newType);
-        const newTrackingNumberArray = [...trackingNumberSet.add(trackingNumber)];
-        setNewType(newTrackingNumberArray);
-        setPendingType("");
+        if (trackingNumber) {
+            const trackingNumberSet = new Set(newType);
+            const newTrackingNumberArray = [...trackingNumberSet.add(trackingNumber)];
+            setNewType(newTrackingNumberArray);
+            setPendingType("");
+        }
     };
     const handleKeyPress = (event) => {
         const enterKeyPressed = event.keyCode === 13;
@@ -136,7 +138,7 @@ export default function EditRule() {
         if (trimmedValue !== "") {
             const lastChar = value.charAt(value.length - 1);
 
-            if (lastChar === "," || lastChar === " ") {
+            if ((lastChar === "," || lastChar === " ") && trimmedValue.length > 1) {
                 return addNewTrackingNumber(value.slice(0, -1));
             }
 
@@ -171,7 +173,7 @@ export default function EditRule() {
                 {tag}
             </Tag>
         ));
-        trackingNumberToAddMarkup = <div className="mt-2"> <InlineStack  gap="500">{tagsToAdd}</InlineStack> </div>;
+        trackingNumberToAddMarkup = <div className="mt-2"> <InlineStack  gap="200">{tagsToAdd}</InlineStack> </div>;
     }
 
 
@@ -746,20 +748,16 @@ export default function EditRule() {
                                                 selectedRadioValue === "vendor" ||
                                                 selectedRadioValue === "tags") && (
                                                 <div className="label_editor">
-                                                    <TextField
-                                                        id="pendingTag"
-                                                        label={
-                                                            selectedRadioValue === "type"
-                                                                ? "Type"
-                                                                : selectedRadioValue === "vendor"
-                                                                    ? "Vendor"
-                                                                    : "Tags"
-                                                        }
-                                                        value={pendingType}
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        onKeyDown={handleKeyPress}
-                                                    />
+                                                    <div onKeyDown={handleKeyPress} style={{ marginBottom: '16px' }}>
+
+                                                        <TextField
+                                                            id="pendingTag"
+                                                            label={selectedRadioValue === 'type' ? 'Type' : selectedRadioValue === 'vendor' ? 'Vendor' : 'Tags'}
+                                                            value={pendingType}
+                                                            onChange={handleChange}
+                                                            onBlur={handleBlur}
+                                                        />
+                                                    </div>
                                                     <div className="tags_spacing">
                                                         {trackingNumberToAddMarkup}
                                                     </div>

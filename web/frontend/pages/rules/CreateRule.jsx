@@ -114,10 +114,12 @@ export default function CreateRule() {
 
 
     const addNewTrackingNumber = (trackingNumber) => {
-        const trackingNumberSet = new Set(newType);
-        const newTrackingNumberArray = [...trackingNumberSet.add(trackingNumber)];
-        setNewType(newTrackingNumberArray);
-        setPendingType("");
+        if (trackingNumber) {
+            const trackingNumberSet = new Set(newType);
+            const newTrackingNumberArray = [...trackingNumberSet.add(trackingNumber)];
+            setNewType(newTrackingNumberArray);
+            setPendingType("");
+        }
     };
     const handleKeyPress = (event) => {
         const enterKeyPressed = event.keyCode === 13;
@@ -133,7 +135,7 @@ export default function CreateRule() {
         if (trimmedValue !== "") {
             const lastChar = value.charAt(value.length - 1);
 
-            if (lastChar === "," || lastChar === " ") {
+            if ((lastChar === "," || lastChar === " ") && trimmedValue.length > 1) {
                 return addNewTrackingNumber(value.slice(0, -1));
             }
 
@@ -168,7 +170,7 @@ export default function CreateRule() {
                 {tag}
             </Tag>
         ));
-        trackingNumberToAddMarkup = <div className="mt-2"> <InlineStack  gap="500">{tagsToAdd}</InlineStack> </div>;
+        trackingNumberToAddMarkup = <div className="mt-2"> <InlineStack  gap="200">{tagsToAdd}</InlineStack> </div>;
     }
 
     const handleRadioChange = (newValue) => {

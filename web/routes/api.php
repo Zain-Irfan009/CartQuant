@@ -28,6 +28,7 @@ Route::group(['middleware' => ['shopify.auth']], function () {
 
     Route::get('installation', [\App\Http\Controllers\SettingController::class, 'index']);
 
+
     Route::get('email', [\App\Http\Controllers\SettingController::class, 'Email']);
     Route::post('send-message', [\App\Http\Controllers\SettingController::class, 'SendMessage']);
 

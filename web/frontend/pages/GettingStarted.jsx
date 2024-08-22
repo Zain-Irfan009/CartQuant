@@ -7,7 +7,7 @@ import {
   import { useTranslation, Trans } from "react-i18next";
 import {React, useContext, useEffect, useState} from "react";
 import {
-    CheckIcon,FlagIcon,QuestionCircleIcon
+    CheckIcon,FlagIcon,QuestionCircleIcon,ExternalSmallIcon
 } from '@shopify/polaris-icons';
 import { useNavigate } from 'react-router-dom';
 import { getSessionToken } from "@shopify/app-bridge-utils";
@@ -20,7 +20,9 @@ export default function GettingStarted() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [extensionEnable, setExtensionEnable] = useState(false);
+    const [passwordProtected, setPasswordProtected] = useState(false);
     const [linkUrl, setLinkUrl] = useState(null);
+    const [passwordlinkUrl, setPasswordLinkUrl] = useState(null);
     const [rule, setRule] = useState(false);
     const [allRuleActive, setAllRuleActive] = useState(false);
     const appBridge = useAppBridge();
@@ -44,7 +46,9 @@ export default function GettingStarted() {
 
             if (response?.status === 200) {
                 setExtensionEnable(response?.data.app_status );
-                setLinkUrl(response?.data?.link)
+                setPasswordProtected(response?.data.password_protected );
+                setLinkUrl(response?.data?.customizer_link)
+                setPasswordLinkUrl(response?.data?.password_link)
                 setRule(response?.data.rule_found);
                 if(response?.data.rule_found) {
                     setAllRuleActive(response?.data.all_rules_active);
@@ -70,6 +74,13 @@ export default function GettingStarted() {
     const handleButtonClick = () => {
         if (linkUrl) {
             window.open(linkUrl, '_blank');
+        }
+    };
+
+
+    const handlePasswordButtonClick = () => {
+        if (passwordlinkUrl) {
+            window.open(passwordlinkUrl, '_blank');
         }
     };
     const SkeltonPage = () => {
@@ -127,40 +138,82 @@ export default function GettingStarted() {
           <br/>
         <Layout >
             <Layout.Section >
+                {passwordProtected &&
                 <Card >
-                    <InlineGrid gap="100" columns={[ 'twoThirds', 'oneThird']} >
-                        <InlineStack  align="start" blockAlign={"center"} >
-                            <div className={`stepIcon ${extensionEnable ? 'active' : ''}`}>
-                                {extensionEnable ? (
-                                    <Icon source={CheckIcon} tone="success" />
-                                ) : (
-                                    <span>1</span>
-                                )}
-                            </div>
+                        <InlineGrid gap="100" columns={['twoThirds', 'oneThird']}>
+                            <InlineStack align="start" blockAlign="center">
+                                <div className={`stepIcon ${!passwordProtected ? 'active' : ''}`}>
+                                    {!passwordProtected ? (
+                                        <Icon source={CheckIcon} tone="success" />
+                                    ) : (
+                                        <span>1</span>
+                                    )}
+                                </div>
 
-                            <div>
-                                <Text variant="headingMd" as="h3">
-                                    Enable your theme block from customizer
-                                </Text>
-                                <Text variant="bodyMd" as="p">
-                                    On Click on the button,you can enable theme
-                                </Text>
-                                <Text variant="bodyMd" as="p">
-                                 extension from customizer
-                                </Text>
-                                {/*<Link url="https://help.shopify.com/manual" external>*/}
-                                {/*    link to the page from your site's menu*/}
-                                {/*</Link>*/}
+                                <div>
+                                    <Text variant="headingMd" as="h3">
+                                        Your Store is Password Protected
+                                    </Text>
+                                    <Text variant="bodyMd" as="p">
+                                        Please disable the password by clicking the button
+                                    </Text>
+                                    {/*<Text variant="bodyMd" as="p">*/}
+                                    {/*    extension from customizer*/}
+                                    {/*</Text>*/}
+                                    {/* <Link url="https://help.shopify.com/manual" external>
+                    link to the page from your site's menu
+                </Link> */}
+                                </div>
+                            </InlineStack>
 
-                            </div>
-                        </InlineStack>
+                            <InlineStack align="end" blockAlign="center">
+                                <Button variant="primary" onClick={handlePasswordButtonClick} size="slim">
+                <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  Disable Password
+                    <Icon source={ExternalSmallIcon} tone="base" />
+                </span>
+                                </Button>
+                            </InlineStack>
+                        </InlineGrid>
+                </Card>
+                }
+                    <br/>
+                <Card >
+                <InlineGrid gap="100" columns={['twoThirds', 'oneThird']}>
+                    <InlineStack align="start" blockAlign="center">
+                        <div className={`stepIcon ${extensionEnable ? 'active' : ''}`}>
+                            {extensionEnable ? (
+                                <Icon source={CheckIcon} tone="success" />
+                            ) : (
+                                <span>{passwordProtected ?2:1}</span>
+                            )}
+                        </div>
 
+                        <div>
+                            <Text variant="headingMd" as="h3">
+                                Enable your theme block from customizer
+                            </Text>
+                            <Text variant="bodyMd" as="p">
+                                On Click on the button, you can enable theme
+                            </Text>
+                            <Text variant="bodyMd" as="p">
+                                extension from customizer
+                            </Text>
+                            {/* <Link url="https://help.shopify.com/manual" external>
+                    link to the page from your site's menu
+                </Link> */}
+                        </div>
+                    </InlineStack>
 
-                        <InlineStack align="end" blockAlign={"center"}>
-
-                            <Button variant="primary" onClick={handleButtonClick}  size={"slim"}>Enable Extension</Button>
-                        </InlineStack>
-                    </InlineGrid>
+                    <InlineStack align="end" blockAlign="center">
+                        <Button variant="primary" onClick={handleButtonClick} size="slim">
+                <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    Enable Extension
+                    <Icon source={ExternalSmallIcon} tone="base" />
+                </span>
+                        </Button>
+                    </InlineStack>
+                </InlineGrid>
                 </Card>
                 <br/>
                 <Card >
@@ -170,7 +223,7 @@ export default function GettingStarted() {
                                 {rule ? (
                                     <Icon source={CheckIcon} tone="success" />
                                 ) : (
-                                    <span>2</span>
+                                    <span>{passwordProtected ?3:2}</span>
                                 )}
                             </div>
 
@@ -203,7 +256,7 @@ export default function GettingStarted() {
                                 {allRuleActive ? (
                                     <Icon source={CheckIcon} tone="success" />
                                 ) : (
-                                    <span>3</span>
+                                    <span>{passwordProtected ?4:3}</span>
                                 )}
                             </div>
 
