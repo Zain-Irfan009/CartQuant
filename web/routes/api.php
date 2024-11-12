@@ -14,9 +14,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+
 Route::get('/', function () {
     return "Hello API";
 });
+
+
+Route::get('/privacy-policy', function () {
+    return view('privacy_policy');
+});
+
 Route::group(['middleware' => ['shopify.auth']], function () {
     Route::get('products', [\App\Http\Controllers\ProductController::class, 'syncProducts']);
 

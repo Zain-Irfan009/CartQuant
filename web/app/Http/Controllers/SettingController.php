@@ -49,8 +49,10 @@ class SettingController extends Controller
                 $data_file = curl_exec($ch);
                 curl_close($ch);
                 $password_protected=false;
+                $password_link=null;
                 if (str_contains($data_file, 'Cart_Quant')) {
                     $app_status=true;
+
                 }
                 elseif (str_contains($data_file, '/password')){
                     $app_status=false;

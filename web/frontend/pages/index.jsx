@@ -445,7 +445,7 @@ export default function HomePage() {
       </span>
                             </Button>
 
-                            <Link url="/support">
+                            <Link url="/Support">
                                 <Button primary>Contact Us</Button>
                             </Link>
                             <Link url="/GettingStarted">
@@ -476,7 +476,7 @@ export default function HomePage() {
       </span>
                                         </Button>
 
-                                        <Link url="/support">
+                                        <Link url="/Support">
                                             <Button primary>Contact Us</Button>
                                         </Link>
                                         <Link url="/GettingStarted">
